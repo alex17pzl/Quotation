@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Quotation</string>
+    <string name="bGetQuotations">GET QUOTATIONS</string>
+    <string name="bFavourite">FAVOURITE QUOTATIONS</string>
+    <string name="bSettings">SETTINGS</string>
+    <string name="bAbout">ABOUT</string>
+
+    <string name="aboutTitle">About</string>
+    <string name="textAbout">Quotation Shake by \n\nAlejandro Ávila Solera\n\nalavso@upv.edu.es\n\nDeveloped for DADM 2022</string>
+    <string name="imageIcon">Imagen de Alejandro Ávila Solera</string>
 </resources>
