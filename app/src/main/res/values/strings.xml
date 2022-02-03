@@ -8,4 +8,12 @@
     <string name="aboutTitle">About</string>
     <string name="textAbout">Quotation Shake by \n\nAlejandro Ávila Solera\n\nalavso@upv.edu.es\n\nDeveloped for DADM 2022</string>
     <string name="imageIcon">Imagen de Alejandro Ávila Solera</string>
+
+    <string name="settingsTitle">Settings</string>
+    <string name="textField1">Name that identifies the user</string>
+    <string name="editText1">Enter your username</string>
+    <string name="textField2">Get quotations in the selected language</string>
+    <string name="textField3">Request quotations using the selected HTTP mehod</string>
+    <string name="get">GET</string>
+    <string name="post">POST</string>
 </resources>

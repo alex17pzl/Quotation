@@ -31,7 +31,8 @@ public class DashboardActivity extends AppCompatActivity {
                     Toast.makeText(DashboardActivity.this, buttonFavouriteQuotations.getText() , Toast.LENGTH_SHORT).show();
                 }
                 if (buttonSettings.isPressed()) {
-                    Toast.makeText(DashboardActivity.this, buttonSettings.getText() , Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                    startActivity(intent);
                 }
                 if (buttonAbout.isPressed()) {
                     Intent intent = new Intent(DashboardActivity.this, AboutActivity.class);
