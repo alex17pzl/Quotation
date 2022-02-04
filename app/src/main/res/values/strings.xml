@@ -19,4 +19,9 @@
 
     <string name="favouriteTitle">Favourite quotations</string>
     <string name="authorInfo">Author info</string>
+
+    <string name="getQuotationsTitle">Get quotations</string>
+    <string name="tvInferiorDerecha">Sample author</string>
+    <string name="tvDentroSv">Hello %1s!\nPress Refresh to get a new quotation</string>
+    <string name="name">Nameless One</string>
 </resources>

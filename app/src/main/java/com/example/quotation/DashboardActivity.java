@@ -30,7 +30,8 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (buttonGetQuotations.isPressed()) {
-                    Toast.makeText(DashboardActivity.this, buttonGetQuotations.getText() , Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DashboardActivity.this, QuotationActivity.class);
+                    startActivity(intent);
                 }
                 if (buttonFavouriteQuotations.isPressed()) {
                     Intent intent = new Intent(DashboardActivity.this, FavouriteActivity.class);

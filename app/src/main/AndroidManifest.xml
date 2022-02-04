@@ -4,8 +4,9 @@
 
     <queries>
         <intent>
-            <action android:name="android.intent.action.VIEW"></action>
-            <data android:scheme="https"></data>
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="https" />
         </intent>
     </queries>
 
@@ -16,6 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Quotation">
+        <activity
+            android:name=".QuotationActivity"
+            android:exported="false"
+            android:label="@string/getQuotationsTitle" />
         <activity
             android:name=".FavouriteActivity"
             android:exported="false"
