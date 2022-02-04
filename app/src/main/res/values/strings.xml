@@ -16,4 +16,7 @@
     <string name="textField3">Request quotations using the selected HTTP mehod</string>
     <string name="get">GET</string>
     <string name="post">POST</string>
+
+    <string name="favouriteTitle">Favourite quotations</string>
+    <string name="authorInfo">Author info</string>
 </resources>

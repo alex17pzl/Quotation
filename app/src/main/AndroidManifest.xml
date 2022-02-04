@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.quotation">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW"></action>
+            <data android:scheme="https"></data>
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,9 +17,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quotation">
         <activity
+            android:name=".FavouriteActivity"
+            android:exported="false"
+            android:label="@string/favouriteTitle" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:label="@string/settingsTitle" />
+            android:label="@string/settingsTitle"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".AboutActivity"
             android:exported="false"

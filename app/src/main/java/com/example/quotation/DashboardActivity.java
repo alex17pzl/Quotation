@@ -3,11 +3,16 @@ package com.example.quotation;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -28,7 +33,8 @@ public class DashboardActivity extends AppCompatActivity {
                     Toast.makeText(DashboardActivity.this, buttonGetQuotations.getText() , Toast.LENGTH_SHORT).show();
                 }
                 if (buttonFavouriteQuotations.isPressed()) {
-                    Toast.makeText(DashboardActivity.this, buttonFavouriteQuotations.getText() , Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DashboardActivity.this, FavouriteActivity.class);
+                    startActivity(intent);
                 }
                 if (buttonSettings.isPressed()) {
                     Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
