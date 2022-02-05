@@ -1,27 +1,30 @@
 <resources>
-    <string name="app_name">Quotation</string>
+    <string name="app_name" translatable="false">Quotation</string>
     <string name="bGetQuotations">GET QUOTATIONS</string>
     <string name="bFavourite">FAVOURITE QUOTATIONS</string>
-    <string name="bSettings">SETTINGS</string>
     <string name="bAbout">ABOUT</string>
 
     <string name="aboutTitle">About</string>
-    <string name="textAbout">Quotation Shake by \n\nAlejandro Ávila Solera\n\nalavso@upv.edu.es\n\nDeveloped for DADM 2022</string>
-    <string name="imageIcon">Imagen de Alejandro Ávila Solera</string>
+    <string name="textAbout">Quotation Shake by   Alejandro Ávila Solera  alavso@upv.edu.es  Developed for DADM 2022</string>
+    <string name="imageIcon">Image from Alejandro Ávila Solera</string>
 
     <string name="settingsTitle">Settings</string>
     <string name="textField1">Name that identifies the user</string>
     <string name="editText1">Enter your username</string>
     <string name="textField2">Get quotations in the selected language</string>
-    <string name="textField3">Request quotations using the selected HTTP mehod</string>
+    <string name="textField3">Request quotations using the selected HTTP method</string>
     <string name="get">GET</string>
-    <string name="post">POST</string>
 
     <string name="favouriteTitle">Favourite quotations</string>
     <string name="authorInfo">Author info</string>
 
     <string name="getQuotationsTitle">Get quotations</string>
     <string name="tvInferiorDerecha">Sample author</string>
-    <string name="tvDentroSv">Hello %1s!\nPress Refresh to get a new quotation</string>
     <string name="name">Nameless One</string>
+    <string name="bSettings">SETTINGS</string>
+    <string name="post">POST</string>
+    <string name="hello">Hello</string>
+    <string name="refresh">"Press Refresh to get a new quotation"</string>
+    <string name="sampleQuotation">This is a sample quotation</string>
+    <string name="sampleAuthor">Sample author</string>
 </resources>

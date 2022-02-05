@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Quotation</string>
+    <string name="bGetQuotations">OBTENER CITAS</string>
+    <string name="bFavourite">CITAS FAVORITAS</string>
+    <string name="bSettings">AJUSTES</string>
+    <string name="bAbout">ACERCA DE</string>
+    <string name="aboutTitle">Acerca de</string>
+    <string name="textAbout">Sacudidad de citación de Alejandro Ávila Solera alavso@upv.edu.es Desarrollado para DADM 2022</string>
+    <string name="imageIcon">Imagen de Alejandro Ávila Solera</string>
+    <string name="settingsTitle">Ajustes</string>
+    <string name="textField1">Nombre que identifica a el usuario</string>
+    <string name="editText1">Ingresa su nombre de usuario</string>
+    <string name="textField2">Obtenga las citas en el idioma seleccionado</string>
+    <string name="textField3">Solicitar las citas utilizando el método HTTP seleccionado</string>
+    <string name="get">OBTENER</string>
+    <string name="post">ENVIAR</string>
+    <string name="favouriteTitle">Citas favoritas</string>
+    <string name="authorInfo">Información del autor</string>
+    <string name="getQuotationsTitle">Obtener las citas</string>
+    <string name="tvInferiorDerecha">Autor de muestra</string>
+    <string name="name">El sin nombre</string>
+    <string name="hello">Hola</string>
+    <string name="refresh">Presione Actualizar para obtener una nueva cita</string>
+    <string name="sampleQuotation">Esta es una cita de muestra</string>
+    <string name="sampleAuthor">Autor de muestra</string>
+</resources>

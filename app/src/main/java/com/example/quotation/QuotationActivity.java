@@ -19,16 +19,20 @@ public class QuotationActivity extends AppCompatActivity {
         TextView sampleText = findViewById(R.id.sampleText);
         ImageButton imageButton = findViewById(R.id.imageButton);
 
+        String hello = getString(R.string.hello);
+        String suf = getString(R.string.refresh);
         String name = getString(R.string.name);
 
-        tvDentroSv.setText("Hello " + name + "\nPress Refresh to get a new quotation");
-
+        tvDentroSv.setText(hello + " " + name + "\n" + suf);
         View.OnClickListener x = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (imageButton.isPressed()) {
-                    tvDentroSv.setText("This is a sample quotation");
-                    sampleText.setText("Sample author");
+                    String quotation = getString(R.string.sampleQuotation);
+                    String author = getString(R.string.sampleAuthor);
+
+                    tvDentroSv.setText(quotation);
+                    sampleText.setText(author);
                 }
             }
 
