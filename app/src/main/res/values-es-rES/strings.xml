@@ -20,8 +20,7 @@
     <string name="getQuotationsTitle">Obtener las citas</string>
     <string name="tvInferiorDerecha">Autor de muestra</string>
     <string name="name">El sin nombre</string>
-    <string name="hello">Hola</string>
-    <string name="refresh">Presione Actualizar para obtener una nueva cita</string>
+    <string name="hello">Hola %1s! Presiona Actualizar para obtener una nueva cita</string>
     <string name="sampleQuotation">Esta es una cita de muestra</string>
     <string name="sampleAuthor">Autor de muestra</string>
 </resources>

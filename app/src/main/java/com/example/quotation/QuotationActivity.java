@@ -20,10 +20,9 @@ public class QuotationActivity extends AppCompatActivity {
         ImageButton imageButton = findViewById(R.id.imageButton);
 
         String hello = getString(R.string.hello);
-        String suf = getString(R.string.refresh);
         String name = getString(R.string.name);
 
-        tvDentroSv.setText(hello + " " + name + "\n" + suf);
+        tvDentroSv.setText(hello.replaceAll("%1s", name));
         View.OnClickListener x = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
