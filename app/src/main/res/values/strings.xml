@@ -26,4 +26,7 @@
     <string name="hello">Hello %1s! \nPress Refresh to get a new quotation</string>
     <string name="sampleQuotation">This is a sample quotation</string>
     <string name="sampleAuthor">Sample author</string>
+
+    <string name="languageArrayEnglish">English</string>
+    <string name="languageArrayRussian">Russian</string>
 </resources>

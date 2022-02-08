@@ -23,4 +23,6 @@
     <string name="hello">Hola %1s! Presiona Actualizar para obtener una nueva cita</string>
     <string name="sampleQuotation">Esta es una cita de muestra</string>
     <string name="sampleAuthor">Autor de muestra</string>
+    <string name="languageArrayEnglish">Inglés</string>
+    <string name="languageArrayRussian">Ruso</string>
 </resources>
