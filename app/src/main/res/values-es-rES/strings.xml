@@ -32,4 +32,11 @@
     <string name="new_quote">Refrescar</string>
     <string name="remove_all">Limpiar Todo</string>
     <string name="delete_all_quotations">¿Estás segura de que quieres eliminar TODAS tus citas favoritas?</string>
+    <string name="titleConf">Configuración</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="paramsService">Parametros</string>
+    <string name="languages">Idioma de las citas</string>
+    <string name="htpp_requests">Peticiones HTTP</string>
+    <string name="summary">Este nombre identifica al usuario dentro de la aplicación.</string>
+    <string name="user_name_hint">Introduce tu nombre de usuario</string>
 </resources>

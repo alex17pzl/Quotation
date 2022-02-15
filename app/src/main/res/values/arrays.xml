@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="languageArray">
         <item>@string/languageArrayEnglish</item>
         <item>@string/languageArrayRussian</item>
     </string-array>
+
+    <array name="default_languages_titles">
+        <item>@string/languageArrayEnglish</item>
+        <item>@string/languageArrayRussian</item>
+    </array>
+
+    <array name="default_languages_values">
+        <item>0</item>
+        <item>1</item>
+    </array>
+
+    <array name="default_requests_titles">
+        <item>@string/get</item>
+        <item>@string/post</item>
+    </array>
+
+    <array name="default_requests_values">
+        <item>0</item>
+        <item>1</item>
+    </array>
+
 </resources>

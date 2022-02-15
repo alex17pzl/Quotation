@@ -39,4 +39,12 @@
     <string name="remove_all">Clear All</string>
 
     <string name="delete_all_quotations">Are you sure that you want to delete ALL your favourite quotations</string>
+
+    <string name="titleConf">Configuration</string>
+    <string name="username">Username</string>
+    <string name="user_name_hint">Enter your username</string>
+    <string name="summary">This name identifies the user within the app</string>
+    <string name="paramsService">Parameters</string>
+    <string name="languages">Quotations language</string>
+    <string name="htpp_requests">HTTP Requests</string>
 </resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:title="@string/username"
+        android:summary="@string/summary"
+        android:defaultValue=""
+        android:hint="@string/user_name_hint"
+        android:key="username"
+        />
+
+    <PreferenceCategory android:title="@string/titleConf">
+
+        <ListPreference
+            android:title="@string/languages"
+            android:entries="@array/default_languages_titles"
+            android:entryValues="@array/default_languages_values"
+            android:key="languages"
+            />
+
+        <ListPreference
+            android:title="@string/htpp_requests"
+            android:entries="@array/default_requests_titles"
+            android:entryValues="@array/default_requests_values"
+            android:key="requests"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
