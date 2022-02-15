@@ -1,25 +1,39 @@
 package com.example.quotation;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.adapter.CustomRecyclerAdapter;
 import com.example.pojo.Quotation;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FavouriteActivity extends AppCompatActivity {
+
+    CustomRecyclerAdapter adapter;
+    List<Quotation> quotations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +65,54 @@ public class FavouriteActivity extends AppCompatActivity {
         RecyclerView.LayoutManager manager = new GridLayoutManager(this, 1);
         recycler.setLayoutManager(manager);
 
-        List<Quotation> quotations = getMockQuotations();
-        CustomRecyclerAdapter adapter = new CustomRecyclerAdapter(quotations);
+        quotations = getMockQuotations();
+
+        adapter = new CustomRecyclerAdapter(quotations, new CustomRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Quotation quotation) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                String autor = quotation.getQuoteAuthor();
+
+                try {
+                    // Para que esté codificado en UTF-8
+                    autor = URLEncoder.encode(autor, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                if (autor == null || autor == "") {
+                    Toast.makeText(FavouriteActivity.this, "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
+                } else {
+                    intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + autor));
+                    //intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Albert_Einstein"));
+
+                    // Get the list of Activities able to manage that Intent
+                    List<ResolveInfo> activities =
+                            getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                    if (activities.size() > 0) {
+                        startActivity(intent);
+                    }
+                }
+            }
+        }, new CustomRecyclerAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteActivity.this);
+                builder.setMessage(getString(R.string.deleteItem));
+
+                builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        adapter.deleteItem(position);
+                    }
+                });
+
+                builder.setNegativeButton(getString(R.string.no), null);
+
+                builder.create().show();
+            }
+        });
 
         RecyclerView.ItemDecoration divider = new DividerItemDecoration(this, 1);
         recycler.addItemDecoration(divider);
@@ -63,17 +123,17 @@ public class FavouriteActivity extends AppCompatActivity {
     public List<Quotation> getMockQuotations() {
         List<Quotation> quotations = new ArrayList<>();
 
-        Quotation q1 = new Quotation("Cita 1", "Autor 1");
-        Quotation q2 = new Quotation("Cita 2", "Autor 2");
-        Quotation q3 = new Quotation("Cita 3", "Autor 3");
-        Quotation q4 = new Quotation("Cita 4", "Autor 4");
-        Quotation q5 = new Quotation("Cita 5", "Autor 5");
-        Quotation q6 = new Quotation("Cita 6", "Autor 6");
-        Quotation q7 = new Quotation("Cita 7", "Autor 7");
-        Quotation q8 = new Quotation("Cita 8", "Autor 8");
-        Quotation q9 = new Quotation("Cita 9", "Autor 9");
-        Quotation q10 = new Quotation("Cita 10", "Autor 10");
-        Quotation q11 = new Quotation("Cita 11", "Autor 11");
+        Quotation q1 = new Quotation("Cita 1", "Pablo Alborán");
+        Quotation q2 = new Quotation("Cita 2", "Sebastian Yatra");
+        Quotation q3 = new Quotation("Cita 3", "Joaquín Sabina");
+        Quotation q4 = new Quotation("Cita 4", "Miguel de Cervantes");
+        Quotation q5 = new Quotation("Cita 5", "Gabriel García Márquez");
+        Quotation q6 = new Quotation("Cita 6", "Paloma Sánchez-Garnica");
+        Quotation q7 = new Quotation("Cita 7", "Julio Verne");
+        Quotation q8 = new Quotation("Cita 8", "Federico García Lorca");
+        Quotation q9 = new Quotation("Cita 9", "Frank McCourt");
+        Quotation q10 = new Quotation("Cita 10", "David Bisbal");
+        Quotation q11 = new Quotation("Cita 11", "");
 
         quotations.add(q1);
         quotations.add(q2);
@@ -88,6 +148,44 @@ public class FavouriteActivity extends AppCompatActivity {
         quotations.add(q11);
 
         return quotations;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_favourite_activity, menu);
+
+        if (getMockQuotations().isEmpty()) {
+            MenuItem item = menu.getItem(0);
+            item.setVisible(false);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.remove_all_quotes) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteActivity.this);
+            builder.setMessage(getString(R.string.delete_all_quotations));
+
+            builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    adapter.deleteAllQuotations();
+                    item.setVisible(false);
+                }
+            });
+
+            builder.setNegativeButton(getString(R.string.no), null);
+
+            builder.create().show();
+
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
 }

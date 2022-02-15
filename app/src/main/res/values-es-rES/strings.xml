@@ -25,4 +25,11 @@
     <string name="sampleAuthor">Autor de muestra</string>
     <string name="languageArrayEnglish">Inglés</string>
     <string name="languageArrayRussian">Ruso</string>
+    <string name="deleteItem">¿Está seguro de que desea eliminar esta cita?</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="add">Añadir</string>
+    <string name="new_quote">Refrescar</string>
+    <string name="remove_all">Limpiar Todo</string>
+    <string name="delete_all_quotations">¿Estás segura de que quieres eliminar TODAS tus citas favoritas?</string>
 </resources>

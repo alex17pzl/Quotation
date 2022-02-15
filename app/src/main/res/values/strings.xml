@@ -29,4 +29,14 @@
 
     <string name="languageArrayEnglish">English</string>
     <string name="languageArrayRussian">Russian</string>
+
+    <string name="deleteItem">Are you sure that you want to delete this quotation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="add">Add</string>
+    <string name="new_quote">Refresh</string>
+    <string name="remove_all">Clear All</string>
+
+    <string name="delete_all_quotations">Are you sure that you want to delete ALL your favourite quotations</string>
 </resources>

@@ -20,20 +20,24 @@
         <activity
             android:name=".QuotationActivity"
             android:exported="false"
-            android:label="@string/getQuotationsTitle" />
+            android:label="@string/getQuotationsTitle"
+            android:parentActivityName=".DashboardActivity"/>
         <activity
             android:name=".FavouriteActivity"
             android:exported="false"
-            android:label="@string/favouriteTitle" />
+            android:label="@string/favouriteTitle"
+            android:parentActivityName=".DashboardActivity"/>
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/settingsTitle"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:parentActivityName=".DashboardActivity"/>
         <activity
             android:name=".AboutActivity"
             android:exported="false"
-            android:label="@string/aboutTitle" />
+            android:label="@string/aboutTitle"
+            android:parentActivityName=".DashboardActivity"/>
         <activity
             android:name=".DashboardActivity"
             android:exported="true">

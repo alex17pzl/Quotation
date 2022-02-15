@@ -14,9 +14,13 @@ import com.example.quotation.R;
 public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
 
     private List<Quotation> quotations;
+    private OnItemClickListener onItemClickListener;
+    private OnItemLongClickListener onItemLongClickListener;
 
-    public CustomRecyclerAdapter(List<Quotation> quotations) {
+    public CustomRecyclerAdapter(List<Quotation> quotations, OnItemClickListener onItemClickListener, OnItemLongClickListener onItemLongClickListener) {
         this.quotations = quotations;
+        this.onItemClickListener = onItemClickListener;
+        this.onItemLongClickListener = onItemLongClickListener;
     }
 
     @NonNull
@@ -41,7 +45,7 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
         return quotations.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView quoteText;
         public TextView quoteAuthor;
 
@@ -49,7 +53,41 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
             super(view);
             quoteText = view.findViewById(R.id.tvCita);
             quoteAuthor = view.findViewById(R.id.tvAutor);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemClickListener.onItemClick(quotations.get(getAdapterPosition()));
+                }
+            });
+
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    onItemLongClickListener.onItemLongClick(getAdapterPosition());
+                    return true;
+                }
+
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Quotation quotation);
+    }
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
+    public void deleteItem(int position) {
+        quotations.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void deleteAllQuotations() {
+        quotations.removeAll(quotations);
+        notifyDataSetChanged();
     }
 
 }
