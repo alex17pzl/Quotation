@@ -21,8 +21,8 @@
     <string name="tvInferiorDerecha">Autor de muestra</string>
     <string name="name">El sin nombre</string>
     <string name="hello">Hola %1s! Presiona Actualizar para obtener una nueva cita</string>
-    <string name="sampleQuotation">Esta es una cita de muestra</string>
-    <string name="sampleAuthor">Autor de muestra</string>
+    <string name="sampleQuotation">Cita de muestra %1$d</string>
+    <string name="sampleAuthor">Autor de muestra %1$d</string>
     <string name="languageArrayEnglish">Inglés</string>
     <string name="languageArrayRussian">Ruso</string>
     <string name="deleteItem">¿Está seguro de que desea eliminar esta cita?</string>

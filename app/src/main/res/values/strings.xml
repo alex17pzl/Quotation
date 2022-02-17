@@ -24,8 +24,8 @@
     <string name="bSettings">SETTINGS</string>
     <string name="post">POST</string>
     <string name="hello">Hello %1s! \nPress Refresh to get a new quotation</string>
-    <string name="sampleQuotation">This is a sample quotation</string>
-    <string name="sampleAuthor">Sample author</string>
+    <string name="sampleQuotation">Sample quotation %1$d</string>
+    <string name="sampleAuthor">Sample author %1$d</string>
 
     <string name="languageArrayEnglish">English</string>
     <string name="languageArrayRussian">Russian</string>

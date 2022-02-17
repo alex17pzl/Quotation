@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adapter.CustomRecyclerAdapter;
+import com.example.databases.DataBase;
+import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
 
 import java.io.UnsupportedEncodingException;
@@ -35,37 +37,21 @@ public class FavouriteActivity extends AppCompatActivity {
     CustomRecyclerAdapter adapter;
     List<Quotation> quotations;
 
+    private QuotationDAO quotationDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
 
-        /*Button buttonFavourite = findViewById(R.id.bAuhorInfo);
-
-        View.OnClickListener x = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + "Albert Einstein"));
-                //intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Albert_Einstein"));
-
-                // Get the list of Activities able to manage that Intent
-                List<ResolveInfo> activities =
-                        getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-                if (activities.size() > 0) {
-                    startActivity(intent);
-                }
-            }
-        };
-
-        buttonFavourite.setOnClickListener(x);*/
+        quotationDAO = quotationDAO = DataBase.getInstance(this).obtainInterface();
 
         RecyclerView recycler = findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager manager = new GridLayoutManager(this, 1);
         recycler.setLayoutManager(manager);
 
-        quotations = getMockQuotations();
+        //quotations = getMockQuotations();
+        quotations = quotationDAO.obtainAllQuotation();
 
         adapter = new CustomRecyclerAdapter(quotations, new CustomRecyclerAdapter.OnItemClickListener() {
             @Override
@@ -104,6 +90,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        quotationDAO.deleteQuotation(quotations.get(position));
                         adapter.deleteItem(position);
                     }
                 });
@@ -155,7 +142,7 @@ public class FavouriteActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_favourite_activity, menu);
 
-        if (getMockQuotations().isEmpty()) {
+        if (quotationDAO.obtainAllQuotation().size() == 0) {
             MenuItem item = menu.getItem(0);
             item.setVisible(false);
         }
@@ -174,6 +161,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     adapter.deleteAllQuotations();
+                    quotationDAO.deleteAllQuotation();
                     item.setVisible(false);
                 }
             });

@@ -12,8 +12,8 @@
     </array>
 
     <array name="default_languages_values">
-        <item>0</item>
-        <item>1</item>
+        <item>en</item>
+        <item>rus</item>
     </array>
 
     <array name="default_requests_titles">
@@ -22,8 +22,8 @@
     </array>
 
     <array name="default_requests_values">
-        <item>0</item>
-        <item>1</item>
+        <item>get</item>
+        <item>post</item>
     </array>
 
 </resources>
