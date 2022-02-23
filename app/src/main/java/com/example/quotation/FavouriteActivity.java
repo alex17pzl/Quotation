@@ -26,6 +26,7 @@ import com.example.adapter.CustomRecyclerAdapter;
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
+import com.example.threads.OneThread;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,9 +36,10 @@ import java.util.List;
 public class FavouriteActivity extends AppCompatActivity {
 
     CustomRecyclerAdapter adapter;
-    List<Quotation> quotations;
+    boolean removeAllVisible;
 
     private QuotationDAO quotationDAO;
+    OneThread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,9 @@ public class FavouriteActivity extends AppCompatActivity {
         recycler.setLayoutManager(manager);
 
         //quotations = getMockQuotations();
-        quotations = quotationDAO.obtainAllQuotation();
+        //quotations = quotationDAO.obtainAllQuotation();
 
-        adapter = new CustomRecyclerAdapter(quotations, new CustomRecyclerAdapter.OnItemClickListener() {
+        adapter = new CustomRecyclerAdapter(new ArrayList<Quotation>(), new CustomRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Quotation quotation) {
                 Intent intent = new Intent();
@@ -90,8 +92,30 @@ public class FavouriteActivity extends AppCompatActivity {
                 builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        quotationDAO.deleteQuotation(quotations.get(position));
-                        adapter.deleteItem(position);
+
+
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quotationDAO.deleteQuotation(adapter.getQuotation(position));
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.deleteItem(position);
+
+                                        if (adapter.getItemCount() == 0) {
+                                            removeAllVisible = false;
+                                        } else {
+                                            removeAllVisible = true;
+                                        }
+                                    }
+                                });
+                            }
+                        }).start();
+
+                        // Se vuelve a llamar al método onCreateOptionsMenu()
+                        invalidateOptionsMenu();
                     }
                 });
 
@@ -142,10 +166,7 @@ public class FavouriteActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_favourite_activity, menu);
 
-        if (quotationDAO.obtainAllQuotation().size() == 0) {
-            MenuItem item = menu.getItem(0);
-            item.setVisible(false);
-        }
+        menu.findItem(R.id.remove_all_quotes).setVisible(removeAllVisible);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -160,9 +181,20 @@ public class FavouriteActivity extends AppCompatActivity {
             builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            quotationDAO.deleteAllQuotation();
+                        }
+                    }).start();
+
                     adapter.deleteAllQuotations();
-                    quotationDAO.deleteAllQuotation();
-                    item.setVisible(false);
+
+                    removeAllVisible =  false;
+
+                    // Se vuelve a llamar al método onCreateOptionsMenu()
+                    invalidateOptionsMenu();
                 }
             });
 
@@ -176,4 +208,22 @@ public class FavouriteActivity extends AppCompatActivity {
         }
     }
 
+    public void showDeleteAllQuotationsOption(List<Quotation> quotes) {
+        // Si hay alguna cita favorita muestra la opcíon de borrar todas las citas
+        if (quotes.size() != 0) {
+            adapter.addFavouriteQuotationsToStoredList(quotes);
+            removeAllVisible = true;
+        } else {
+            removeAllVisible = false;
+        }
+        // Se vuelve a llamar al método onCreateOptionsMenu()
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        thread = new OneThread(this);
+        thread.start();
+    }
 }

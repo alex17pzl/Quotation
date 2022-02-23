@@ -90,4 +90,13 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
         notifyDataSetChanged();
     }
 
+    public void addFavouriteQuotationsToStoredList(List<Quotation> quotes) {
+        quotations.addAll(quotes);
+        notifyDataSetChanged();
+    }
+
+    public Quotation getQuotation(int position) {
+        return quotations.get(position);
+    }
+
 }

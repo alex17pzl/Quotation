@@ -21,7 +21,7 @@ public abstract class DataBase extends RoomDatabase {
 
     public static synchronized DataBase getInstance(Context context) {
         if (dataBase == null) {
-            dataBase = Room.databaseBuilder(context, DataBase.class, "quotation").allowMainThreadQueries().build();
+            dataBase = Room.databaseBuilder(context, DataBase.class, "quotation").build();
         }
         return dataBase;
     }

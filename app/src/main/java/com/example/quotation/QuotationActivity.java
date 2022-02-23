@@ -18,6 +18,10 @@ import android.widget.TextView;
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
+import com.example.threads.OneThread;
+import com.example.threads.QuotationThread;
+
+import java.util.List;
 
 public class QuotationActivity extends AppCompatActivity {
 
@@ -28,6 +32,7 @@ public class QuotationActivity extends AppCompatActivity {
     TextView sampleText;
 
     private QuotationDAO quotationDAO;
+    QuotationThread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +57,6 @@ public class QuotationActivity extends AppCompatActivity {
 
         } else {
 
-            //TextView tvDentroSv = findViewById(R.id.tvDentroSv);
-            //TextView sampleText = findViewById(R.id.sampleText);
-            //ImageButton imageButton = findViewById(R.id.imageButton);
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
             String username = prefs.getString("username", "");
@@ -67,8 +68,9 @@ public class QuotationActivity extends AppCompatActivity {
 
             String hello = getString(R.string.hello, username);
 
-            tvDentroSv.setText(hello);
+            addVisible = false;
 
+            tvDentroSv.setText(hello);
         }
 
     }
@@ -98,22 +100,28 @@ public class QuotationActivity extends AppCompatActivity {
              tvDentroSv.setText(quotation);
              sampleText.setText(author);
 
-             if (quotationDAO.obtainQuotation(tvDentroSv.getText().toString()) == null) {
-                 addVisible = true;
-                 thisMenu.findItem(R.id.add_quote_obtained).setVisible(true);
-             } else {
-                 addVisible = false;
-                 thisMenu.findItem(R.id.add_quote_obtained).setVisible(false);
-             }
+             // Llamamos al hilo
+             new QuotationThread(this).start();
 
              return true;
          } else {
              // Añadir a favoritos
              if (item.getItemId() == R.id.add_quote_obtained) {
-                 thisMenu.findItem(R.id.add_quote_obtained).setVisible(false);
-                 quotationDAO.addQuotation(new Quotation(tvDentroSv.getText().toString(), sampleText.getText().toString()));
+
+                 addVisible = false;
+
+                 new Thread(new Runnable() {
+                     @Override
+                     public void run() {
+                         quotationDAO.addQuotation(new Quotation(tvDentroSv.getText().toString(), sampleText.getText().toString()));
+                     }
+                 }).start();
+
+                 // Se vuelve a llamar al método onCreateOptionsMenu()
+                 invalidateOptionsMenu();
 
                  return true;
+
              } else {
                  return super.onOptionsItemSelected(item);
              }
@@ -130,4 +138,21 @@ public class QuotationActivity extends AppCompatActivity {
         outState.putInt("currentNumberLabel", quotesReceived);
         outState.putBoolean("addVisible", (thisMenu.findItem(R.id.add_quote_obtained).isVisible()));
     }
+
+    public void showAddQuoteToFavouriteOption(Quotation quote) {
+        // Si se encuentra en la base de datos se muestra la opción de añadir la cita a favoritos.
+        if (quote != null) {
+            addVisible = false;
+        } else {
+            addVisible = true;
+        }
+
+        // Se vuelve a llamar al método onCreateOptionsMenu()
+        invalidateOptionsMenu();
+    }
+
+    public String getTvDentroSv() {
+        return tvDentroSv.getText().toString();
+    }
+
 }
