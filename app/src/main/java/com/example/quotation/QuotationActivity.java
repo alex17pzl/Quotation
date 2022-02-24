@@ -5,6 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
@@ -13,26 +19,39 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
 import com.example.threads.OneThread;
 import com.example.threads.QuotationThread;
+import com.example.webservice.RetrofitInterface;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class QuotationActivity extends AppCompatActivity {
 
-    private int quotesReceived = 0;
+    //private int quotesReceived = 0;
     Menu thisMenu;
     boolean addVisible;
     TextView tvDentroSv;
     TextView sampleText;
+    ProgressBar progressBar;
 
     private QuotationDAO quotationDAO;
     QuotationThread thread;
+
+    Retrofit retrofit;
+    RetrofitInterface retrofitInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +61,18 @@ public class QuotationActivity extends AppCompatActivity {
         tvDentroSv = findViewById(R.id.tvDentroSv);
         sampleText = findViewById(R.id.sampleText);
 
+        progressBar = findViewById(R.id.progressBar);
+
         quotationDAO = DataBase.getInstance(this).obtainInterface();
+
+        // Se crea una instancia de Retrofit
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.forismatic.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Se crea la implementación de la interfaz previamente definida
+        retrofitInterface = retrofit.create(RetrofitInterface.class);
 
         if (savedInstanceState != null) {
 
@@ -53,7 +83,7 @@ public class QuotationActivity extends AppCompatActivity {
 
             tvDentroSv.setText(quotation);
             sampleText.setText(author);
-            quotesReceived = currentNumberLabel;
+            //quotesReceived = currentNumberLabel;
 
         } else {
 
@@ -90,18 +120,63 @@ public class QuotationActivity extends AppCompatActivity {
         tvDentroSv = findViewById(R.id.tvDentroSv);
         sampleText = findViewById(R.id.sampleText);
 
-        String quotation = getString(R.string.sampleQuotation, quotesReceived);
-        String author = getString(R.string.sampleAuthor, quotesReceived);
+        //String quotation = getString(R.string.sampleQuotation, quotesReceived);
+        //String author = getString(R.string.sampleAuthor, quotesReceived);
 
         // Añadir una nueva cita a favoritos
          if (item.getItemId() == R.id.obtain_new_quote) {
-             quotesReceived++;
+
+             //
+             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+             String request = prefs.getString("requests", "");
+
+             hideAllActionBarOptionAndShowProgressBar();
+
+             if (isConnected()) {
+                 if (request.equals("get")) {
+
+                     Call<Quotation> call = retrofitInterface.getQuotation("en");
+
+                     call.enqueue(new Callback<Quotation>() {
+                         @Override
+                         public void onResponse(Call<Quotation> call, Response<Quotation> response) {
+                             updateQuoteTextAndQuoteAuthor(response.body());
+                         }
+
+                         @Override
+                         public void onFailure(Call<Quotation> call, Throwable t) {
+                             updateQuoteTextAndQuoteAuthor(null);
+                         }
+                     });
+
+                 } else {
+                     Call<Quotation> call = retrofitInterface.postQuotation("getQuote", "json", "en");
+
+                     call.enqueue(new Callback<Quotation>() {
+                         @Override
+                         public void onResponse(Call<Quotation> call, Response<Quotation> response) {
+                             updateQuoteTextAndQuoteAuthor(response.body());
+                         }
+
+                         @Override
+                         public void onFailure(Call<Quotation> call, Throwable t) {
+                             updateQuoteTextAndQuoteAuthor(null);
+                         }
+                     });
+                 }
+             } else {
+                 Toast.makeText(this, "There is no connection", Toast.LENGTH_SHORT).show();
+             }
+
+             //
+
+             /*quotesReceived++;
 
              tvDentroSv.setText(quotation);
-             sampleText.setText(author);
+             sampleText.setText(author);*/
 
              // Llamamos al hilo
-             new QuotationThread(this).start();
+             //new QuotationThread(this).start();
 
              return true;
          } else {
@@ -135,7 +210,7 @@ public class QuotationActivity extends AppCompatActivity {
 
         outState.putString("quotation", tvDentroSv.getText().toString());
         outState.putString("author", sampleText.getText().toString());
-        outState.putInt("currentNumberLabel", quotesReceived);
+        //outState.putInt("currentNumberLabel", quotesReceived);
         outState.putBoolean("addVisible", (thisMenu.findItem(R.id.add_quote_obtained).isVisible()));
     }
 
@@ -153,6 +228,45 @@ public class QuotationActivity extends AppCompatActivity {
 
     public String getTvDentroSv() {
         return tvDentroSv.getText().toString();
+    }
+
+    public boolean isConnected() {
+        boolean result = false;
+        ConnectivityManager manager = ( ConnectivityManager ) getSystemService(CONNECTIVITY_SERVICE);
+        if (Build.VERSION. SDK_INT > 22 ) {
+            final Network activeNetwork = manager.getActiveNetwork();
+            if (activeNetwork != null ) {
+                final NetworkCapabilities networkCapabilities = manager.getNetworkCapabilities(activeNetwork);
+                result = networkCapabilities != null && (
+                        networkCapabilities.hasTransport(NetworkCapabilities. TRANSPORT_CELLULAR) ||
+                        networkCapabilities.hasTransport(NetworkCapabilities. TRANSPORT_WIFI));
+            }
+        } else {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            result = ((info != null) && (info.isConnected()));
+        }
+        return result;
+    }
+
+    public void hideAllActionBarOptionAndShowProgressBar() {
+        thisMenu.findItem(R.id.add_quote_obtained).setVisible(false);
+        thisMenu.findItem(R.id.obtain_new_quote).setVisible(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void updateQuoteTextAndQuoteAuthor(Quotation quotation) {
+
+        if (quotation == null) {
+            Toast.makeText(this, "No fue posible obtener una cita", Toast.LENGTH_SHORT).show();
+        } else {
+            tvDentroSv.setText(quotation.getQuoteText());
+            sampleText.setText(quotation.getQuoteAuthor());
+
+            progressBar.setVisibility(View.INVISIBLE);
+
+            // Llamamos al hilo
+            new QuotationThread(this).start();
+        }
     }
 
 }
