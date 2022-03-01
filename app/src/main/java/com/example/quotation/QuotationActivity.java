@@ -132,10 +132,12 @@ public class QuotationActivity extends AppCompatActivity {
 
              hideAllActionBarOptionAndShowProgressBar();
 
+             String req = prefs.getString("languages", "");
+
              if (isConnected()) {
                  if (request.equals("get")) {
 
-                     Call<Quotation> call = retrofitInterface.getQuotation("en");
+                     Call<Quotation> call = retrofitInterface.getQuotation(req);
 
                      call.enqueue(new Callback<Quotation>() {
                          @Override
@@ -150,7 +152,7 @@ public class QuotationActivity extends AppCompatActivity {
                      });
 
                  } else {
-                     Call<Quotation> call = retrofitInterface.postQuotation("getQuote", "json", "en");
+                     Call<Quotation> call = retrofitInterface.postQuotation("getQuote", "json", req);
 
                      call.enqueue(new Callback<Quotation>() {
                          @Override
