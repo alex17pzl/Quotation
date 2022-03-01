@@ -1,18 +1,17 @@
 package com.example.threads;
 
 import com.example.databases.DataBase;
-import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
-import com.example.quotation.FavouriteActivity;
+import com.example.fragments.FavouriteFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class OneThread extends Thread {
 
-    private final WeakReference<FavouriteActivity> reference;
+    private final WeakReference<FavouriteFragment> reference;
 
-    public OneThread(FavouriteActivity activity) {
+    public OneThread(FavouriteFragment activity) {
         super();
         this.reference = new WeakReference<>(activity);
     }

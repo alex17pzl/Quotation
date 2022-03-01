@@ -21,23 +21,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quotation">
         <activity
-            android:name=".QuotationActivity"
+            android:name="com.example.fragments.QuotationFragment"
             android:exported="false"
             android:label="@string/getQuotationsTitle"
             android:parentActivityName=".DashboardActivity"/>
         <activity
-            android:name=".FavouriteActivity"
+            android:name="com.example.fragments.FavouriteFragment"
             android:exported="false"
             android:label="@string/favouriteTitle"
             android:parentActivityName=".DashboardActivity"/>
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="@string/settingsTitle"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:parentActivityName=".DashboardActivity"/>
-        <activity
-            android:name=".AboutActivity"
+            android:name="com.example.fragments.AboutFragment"
             android:exported="false"
             android:label="@string/aboutTitle"
             android:parentActivityName=".DashboardActivity"/>

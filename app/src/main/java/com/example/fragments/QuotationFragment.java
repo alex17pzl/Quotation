@@ -1,24 +1,20 @@
-package com.example.quotation;
+package com.example.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,11 +22,9 @@ import android.widget.Toast;
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
-import com.example.threads.OneThread;
+import com.example.quotation.R;
 import com.example.threads.QuotationThread;
 import com.example.webservice.RetrofitInterface;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +32,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class QuotationActivity extends AppCompatActivity {
+public class QuotationFragment extends AppCompatActivity {
 
     //private int quotesReceived = 0;
     Menu thisMenu;
@@ -56,7 +50,7 @@ public class QuotationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quotation);
+        setContentView(R.layout.fragment_quotation);
 
         tvDentroSv = findViewById(R.id.tvDentroSv);
         sampleText = findViewById(R.id.sampleText);

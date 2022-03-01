@@ -2,17 +2,15 @@ package com.example.threads;
 
 import com.example.databases.DataBase;
 import com.example.pojo.Quotation;
-import com.example.quotation.FavouriteActivity;
-import com.example.quotation.QuotationActivity;
+import com.example.fragments.QuotationFragment;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 public class QuotationThread extends Thread {
 
-    private final WeakReference<QuotationActivity> ref;
+    private final WeakReference<QuotationFragment> ref;
 
-    public QuotationThread(QuotationActivity activity) {
+    public QuotationThread(QuotationFragment activity) {
         super();
         this.ref = new WeakReference<>(activity);
     }

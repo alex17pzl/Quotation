@@ -18,5 +18,5 @@
         <item name="android:textColor">@color/teal_200</item>
         <item name="android:textSize">@dimen/miTamanyo</item>
     </style>
-    <dimen name="miTamanyo">24sp</dimen>
+    <dimen name="miTamanyo">12sp</dimen>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.quotation;
+package com.example.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -16,16 +16,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adapter.CustomRecyclerAdapter;
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
 import com.example.pojo.Quotation;
+import com.example.quotation.R;
 import com.example.threads.OneThread;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +30,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavouriteActivity extends AppCompatActivity {
+public class FavouriteFragment extends AppCompatActivity {
 
     CustomRecyclerAdapter adapter;
     boolean removeAllVisible;
@@ -44,7 +41,7 @@ public class FavouriteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favourite);
+        setContentView(R.layout.fragment_favourite);
 
         quotationDAO = quotationDAO = DataBase.getInstance(this).obtainInterface();
 
@@ -70,7 +67,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 }
 
                 if (autor == null || autor == "") {
-                    Toast.makeText(FavouriteActivity.this, "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FavouriteFragment.this, "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
                 } else {
                     intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + autor));
                     //intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Albert_Einstein"));
@@ -86,7 +83,7 @@ public class FavouriteActivity extends AppCompatActivity {
         }, new CustomRecyclerAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteFragment.this);
                 builder.setMessage(getString(R.string.deleteItem));
 
                 builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -175,7 +172,7 @@ public class FavouriteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.remove_all_quotes) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteFragment.this);
             builder.setMessage(getString(R.string.delete_all_quotations));
 
             builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
