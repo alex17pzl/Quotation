@@ -1,8 +1,11 @@
 package com.example.fragments;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -11,10 +14,12 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +37,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class QuotationFragment extends AppCompatActivity {
+public class QuotationFragment extends Fragment {
 
     //private int quotesReceived = 0;
     Menu thisMenu;
@@ -47,17 +52,27 @@ public class QuotationFragment extends AppCompatActivity {
     Retrofit retrofit;
     RetrofitInterface retrofitInterface;
 
+    public QuotationFragment() {
+
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_quotation);
+        setHasOptionsMenu(true);
+    }
 
-        tvDentroSv = findViewById(R.id.tvDentroSv);
-        sampleText = findViewById(R.id.sampleText);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_quotation, null);
 
-        progressBar = findViewById(R.id.progressBar);
+        tvDentroSv = view.findViewById(R.id.tvDentroSv);
+        sampleText = view.findViewById(R.id.sampleText);
 
-        quotationDAO = DataBase.getInstance(this).obtainInterface();
+        progressBar = view.findViewById(R.id.progressBar);
+
+        quotationDAO = DataBase.getInstance(requireContext()).obtainInterface();
 
         // Se crea una instancia de Retrofit
         retrofit = new Retrofit.Builder()
@@ -69,7 +84,6 @@ public class QuotationFragment extends AppCompatActivity {
         retrofitInterface = retrofit.create(RetrofitInterface.class);
 
         if (savedInstanceState != null) {
-
             int currentNumberLabel = savedInstanceState.getInt("currentNumberLabel");
             String quotation = savedInstanceState.getString("quotation");
             String author = savedInstanceState.getString("author");
@@ -77,11 +91,8 @@ public class QuotationFragment extends AppCompatActivity {
 
             tvDentroSv.setText(quotation);
             sampleText.setText(author);
-            //quotesReceived = currentNumberLabel;
-
         } else {
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
             String username = prefs.getString("username", "");
             String name = getString(R.string.name);
@@ -97,31 +108,25 @@ public class QuotationFragment extends AppCompatActivity {
             tvDentroSv.setText(hello);
         }
 
+        return view;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        //MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu, menu);
         thisMenu = menu;
         thisMenu.findItem(R.id.add_quote_obtained).setVisible(addVisible);
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        tvDentroSv = findViewById(R.id.tvDentroSv);
-        sampleText = findViewById(R.id.sampleText);
-
-        //String quotation = getString(R.string.sampleQuotation, quotesReceived);
-        //String author = getString(R.string.sampleAuthor, quotesReceived);
 
         // Añadir una nueva cita a favoritos
          if (item.getItemId() == R.id.obtain_new_quote) {
 
              //
-             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
              String request = prefs.getString("requests", "");
 
              hideAllActionBarOptionAndShowProgressBar();
@@ -161,18 +166,8 @@ public class QuotationFragment extends AppCompatActivity {
                      });
                  }
              } else {
-                 Toast.makeText(this, "There is no connection", Toast.LENGTH_SHORT).show();
+                 Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
              }
-
-             //
-
-             /*quotesReceived++;
-
-             tvDentroSv.setText(quotation);
-             sampleText.setText(author);*/
-
-             // Llamamos al hilo
-             //new QuotationThread(this).start();
 
              return true;
          } else {
@@ -189,7 +184,7 @@ public class QuotationFragment extends AppCompatActivity {
                  }).start();
 
                  // Se vuelve a llamar al método onCreateOptionsMenu()
-                 invalidateOptionsMenu();
+                 getActivity().invalidateOptionsMenu();
 
                  return true;
 
@@ -201,7 +196,7 @@ public class QuotationFragment extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("quotation", tvDentroSv.getText().toString());
@@ -219,7 +214,7 @@ public class QuotationFragment extends AppCompatActivity {
         }
 
         // Se vuelve a llamar al método onCreateOptionsMenu()
-        invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
     }
 
     public String getTvDentroSv() {
@@ -228,7 +223,7 @@ public class QuotationFragment extends AppCompatActivity {
 
     public boolean isConnected() {
         boolean result = false;
-        ConnectivityManager manager = ( ConnectivityManager ) getSystemService(CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = ( ConnectivityManager ) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION. SDK_INT > 22 ) {
             final Network activeNetwork = manager.getActiveNetwork();
             if (activeNetwork != null ) {
@@ -253,7 +248,7 @@ public class QuotationFragment extends AppCompatActivity {
     public void updateQuoteTextAndQuoteAuthor(Quotation quotation) {
 
         if (quotation == null) {
-            Toast.makeText(this, "No fue posible obtener una cita", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "No fue posible obtener una cita", Toast.LENGTH_SHORT).show();
         } else {
             tvDentroSv.setText(quotation.getQuoteText());
             sampleText.setText(quotation.getQuoteAuthor());

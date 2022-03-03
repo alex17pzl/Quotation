@@ -11,16 +11,16 @@ public class OneThread extends Thread {
 
     private final WeakReference<FavouriteFragment> reference;
 
-    public OneThread(FavouriteFragment activity) {
+    public OneThread(FavouriteFragment fragment) {
         super();
-        this.reference = new WeakReference<>(activity);
+        this.reference = new WeakReference<>(fragment);
     }
 
     @Override
     public void run() {
             if (reference.get() != null) {
-                List<Quotation> quotations = DataBase.getInstance(reference.get()).obtainInterface().obtainAllQuotation();
-                reference.get().runOnUiThread(new Runnable() {
+                List<Quotation> quotations = DataBase.getInstance(reference.get().requireContext()).obtainInterface().obtainAllQuotation();
+                reference.get().getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         reference.get().showDeleteAllQuotationsOption(quotations);

@@ -20,21 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Quotation">
-        <activity
-            android:name="com.example.fragments.QuotationFragment"
-            android:exported="false"
-            android:label="@string/getQuotationsTitle"
-            android:parentActivityName=".DashboardActivity"/>
-        <activity
-            android:name="com.example.fragments.FavouriteFragment"
-            android:exported="false"
-            android:label="@string/favouriteTitle"
-            android:parentActivityName=".DashboardActivity"/>
-        <activity
-            android:name="com.example.fragments.AboutFragment"
-            android:exported="false"
-            android:label="@string/aboutTitle"
-            android:parentActivityName=".DashboardActivity"/>
+
         <activity
             android:name=".DashboardActivity"
             android:exported="true">

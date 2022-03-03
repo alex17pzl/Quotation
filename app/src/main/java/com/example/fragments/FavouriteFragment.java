@@ -1,10 +1,14 @@
 package com.example.fragments;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
@@ -13,14 +17,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.adapter.CustomRecyclerAdapter;
 import com.example.databases.DataBase;
 import com.example.databases.QuotationDAO;
+import com.example.dialogs.CustomDialogFragment;
 import com.example.pojo.Quotation;
 import com.example.quotation.R;
 import com.example.threads.OneThread;
@@ -30,7 +38,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavouriteFragment extends AppCompatActivity {
+public class FavouriteFragment extends Fragment {
 
     CustomRecyclerAdapter adapter;
     boolean removeAllVisible;
@@ -38,19 +46,49 @@ public class FavouriteFragment extends AppCompatActivity {
     private QuotationDAO quotationDAO;
     OneThread thread;
 
+    public FavouriteFragment() {
+
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_favourite);
+        setHasOptionsMenu(true);
 
-        quotationDAO = quotationDAO = DataBase.getInstance(this).obtainInterface();
+        getChildFragmentManager().setFragmentResultListener(
+                "remove_all", this, new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quotationDAO.deleteAllQuotation();
+                            }
+                        }).start();
 
-        RecyclerView recycler = findViewById(R.id.recyclerView);
-        RecyclerView.LayoutManager manager = new GridLayoutManager(this, 1);
+                        adapter.deleteAllQuotations();
+
+                        removeAllVisible =  false;
+
+                        // Se vuelve a llamar al método onCreateOptionsMenu()
+                        getActivity().invalidateOptionsMenu();
+                    }
+                }
+        );
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_favourite, null);
+
+        quotationDAO = quotationDAO = DataBase.getInstance(requireContext()).obtainInterface();
+
+        RecyclerView recycler = view.findViewById(R.id.recyclerView);
+        RecyclerView.LayoutManager manager = new GridLayoutManager(requireContext(), 1);
         recycler.setLayoutManager(manager);
 
-        //quotations = getMockQuotations();
-        //quotations = quotationDAO.obtainAllQuotation();
+        //ItemTouchHelper itemTouchHelper = ;
 
         adapter = new CustomRecyclerAdapter(new ArrayList<Quotation>(), new CustomRecyclerAdapter.OnItemClickListener() {
             @Override
@@ -67,14 +105,14 @@ public class FavouriteFragment extends AppCompatActivity {
                 }
 
                 if (autor == null || autor == "") {
-                    Toast.makeText(FavouriteFragment.this, "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
                 } else {
                     intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + autor));
                     //intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Albert_Einstein"));
 
                     // Get the list of Activities able to manage that Intent
                     List<ResolveInfo> activities =
-                            getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                            requireContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
                     if (activities.size() > 0) {
                         startActivity(intent);
                     }
@@ -83,7 +121,7 @@ public class FavouriteFragment extends AppCompatActivity {
         }, new CustomRecyclerAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteFragment.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setMessage(getString(R.string.deleteItem));
 
                 builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -96,7 +134,7 @@ public class FavouriteFragment extends AppCompatActivity {
                             @Override
                             public void run() {
                                 quotationDAO.deleteQuotation(adapter.getQuotation(position));
-                                runOnUiThread(new Runnable() {
+                                getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         adapter.deleteItem(position);
@@ -112,7 +150,7 @@ public class FavouriteFragment extends AppCompatActivity {
                         }).start();
 
                         // Se vuelve a llamar al método onCreateOptionsMenu()
-                        invalidateOptionsMenu();
+                        getActivity().invalidateOptionsMenu();
                     }
                 });
 
@@ -122,10 +160,12 @@ public class FavouriteFragment extends AppCompatActivity {
             }
         });
 
-        RecyclerView.ItemDecoration divider = new DividerItemDecoration(this, 1);
+        RecyclerView.ItemDecoration divider = new DividerItemDecoration(requireContext(), 1);
         recycler.addItemDecoration(divider);
 
         recycler.setAdapter(adapter);
+
+        return view;
     }
 
     public List<Quotation> getMockQuotations() {
@@ -159,46 +199,16 @@ public class FavouriteFragment extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.menu_favourite_activity, menu);
-
         menu.findItem(R.id.remove_all_quotes).setVisible(removeAllVisible);
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.remove_all_quotes) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(FavouriteFragment.this);
-            builder.setMessage(getString(R.string.delete_all_quotations));
-
-            builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            quotationDAO.deleteAllQuotation();
-                        }
-                    }).start();
-
-                    adapter.deleteAllQuotations();
-
-                    removeAllVisible =  false;
-
-                    // Se vuelve a llamar al método onCreateOptionsMenu()
-                    invalidateOptionsMenu();
-                }
-            });
-
-            builder.setNegativeButton(getString(R.string.no), null);
-
-            builder.create().show();
-
+            (new CustomDialogFragment()).show(getChildFragmentManager(), null);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -214,11 +224,11 @@ public class FavouriteFragment extends AppCompatActivity {
             removeAllVisible = false;
         }
         // Se vuelve a llamar al método onCreateOptionsMenu()
-        invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         thread = new OneThread(this);
         thread.start();

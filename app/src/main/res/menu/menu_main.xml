@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/funcGetQuotations"
+        android:title="@string/bGetQuotations"
+        android:icon="@android:drawable/arrow_up_float"
+        android:visible="true" />
+    <item
+        android:id="@+id/funcFavouriteQuotations"
+        android:title="@string/bFavourite"
+        android:icon="@android:drawable/ic_menu_add"
+        android:visible="true"/>
+    <item
+        android:id="@+id/funcSettings"
+        android:title="@string/bSettings"
+        android:icon="@android:drawable/ic_secure"
+        android:visible="true"/>
+    <item
+        android:id="@+id/funcAbout"
+        android:title="@string/bAbout"
+        android:icon="@android:drawable/btn_minus"
+        android:visible="true"/>
+</menu>
