@@ -1,20 +1,7 @@
 package com.example.fragments;
 
-import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE;
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -26,7 +13,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adapter.CustomRecyclerAdapter;
 import com.example.databases.DataBase;
@@ -35,6 +31,8 @@ import com.example.dialogs.CustomDialogFragment;
 import com.example.pojo.Quotation;
 import com.example.quotation.R;
 import com.example.threads.OneThread;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -48,6 +46,8 @@ public class FavouriteFragment extends Fragment {
 
     private QuotationDAO quotationDAO;
     OneThread thread;
+
+    CoordinatorLayout coordinatorLayout;
 
     public FavouriteFragment() {
 
@@ -71,7 +71,7 @@ public class FavouriteFragment extends Fragment {
 
                         adapter.deleteAllQuotations();
 
-                        removeAllVisible =  false;
+                        removeAllVisible = false;
 
                         // Se vuelve a llamar al método onCreateOptionsMenu()
                         getActivity().invalidateOptionsMenu();
@@ -86,6 +86,8 @@ public class FavouriteFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favourite, null);
 
         quotationDAO = quotationDAO = DataBase.getInstance(requireContext()).obtainInterface();
+
+        coordinatorLayout = view.findViewById(R.id.coordinatorFavourite);
 
         RecyclerView recycler = view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager manager = new GridLayoutManager(requireContext(), 1);
@@ -104,24 +106,44 @@ public class FavouriteFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                Quotation quotation = adapter.getQuotation(viewHolder.getLayoutPosition());
+                int position = viewHolder.getLayoutPosition();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        quotationDAO.deleteQuotation(adapter.getQuotation(viewHolder.getLayoutPosition()));
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.deleteItem(viewHolder.getLayoutPosition());
-
-                                if (adapter.getItemCount() == 0) {
-                                    removeAllVisible = false;
-                                } else {
-                                    removeAllVisible = true;
-                                }
-                            }
-                        });
+                        quotationDAO.deleteQuotation(quotation);
                     }
                 }).start();
+
+                adapter.deleteItem(position);
+
+                if (adapter.getItemCount() == 0) {
+                    removeAllVisible = false;
+                } else {
+                    removeAllVisible = true;
+                }
+
+                Snackbar snackbar = Snackbar.make(coordinatorLayout, "Quotation eliminada", BaseTransientBottomBar.LENGTH_SHORT).setAction("Deshacer", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quotationDAO.addQuotation(quotation);
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        removeAllVisible = true;
+                                        getActivity().invalidateOptionsMenu();
+                                    }
+                                });
+                            }
+                        }).start();
+                        adapter.addQuoteAtGivenPosition(quotation, position);
+                    }
+                });
+
+                snackbar.show();
 
                 getActivity().invalidateOptionsMenu();
             }
@@ -153,8 +175,9 @@ public class FavouriteFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-                if (autor == null || autor == "") {
-                    Toast.makeText(requireContext(), "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
+                if (autor.equals("") || autor.equals(null)) {
+                    //Toast.makeText(requireContext(), "No es posible obtener la información del autor", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, "Autor anónimo - No es posible realizar la búsqueda", BaseTransientBottomBar.LENGTH_SHORT).show();
                 } else {
                     intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + autor));
                     //intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Albert_Einstein"));

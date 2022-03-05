@@ -96,6 +96,12 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
 
     public Quotation getQuotation(int position) {
         return quotations.get(position);
+
+    }
+
+    public void addQuoteAtGivenPosition(Quotation quotation, int position) {
+        quotations.add(position, quotation);
+        notifyDataSetChanged();
     }
 
 }

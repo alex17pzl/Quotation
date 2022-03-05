@@ -3,6 +3,7 @@ package com.example.fragments;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -31,6 +32,9 @@ import com.example.pojo.Quotation;
 import com.example.quotation.R;
 import com.example.threads.QuotationThread;
 import com.example.webservice.RetrofitInterface;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,9 +53,13 @@ public class QuotationFragment extends Fragment {
     private QuotationDAO quotationDAO;
     QuotationThread thread;
 
+    View view;
+
     Retrofit retrofit;
     RetrofitInterface retrofitInterface;
     SwipeRefreshLayout swipeRefreshLayout;
+
+    CoordinatorLayout coordinatorLayout;
 
     public QuotationFragment() {
 
@@ -66,10 +74,12 @@ public class QuotationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_quotation, null);
+        view = inflater.inflate(R.layout.fragment_quotation, null);
 
         tvDentroSv = view.findViewById(R.id.tvDentroSv);
         sampleText = view.findViewById(R.id.sampleText);
+
+        coordinatorLayout = view.findViewById(R.id.coordinatorQuotation);
 
         quotationDAO = DataBase.getInstance(requireContext()).obtainInterface();
 
@@ -81,6 +91,24 @@ public class QuotationFragment extends Fragment {
 
         // Se crea la implementación de la interfaz previamente definida
         retrofitInterface = retrofit.create(RetrofitInterface.class);
+
+        FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingFavourite);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addVisible = false;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quotationDAO.addQuotation(new Quotation(tvDentroSv.getText().toString(), sampleText.getText().toString()));
+                    }
+                }).start();
+
+                // Se vuelve a llamar al método onCreateOptionsMenu()
+                getActivity().invalidateOptionsMenu();
+            }
+        });
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -126,7 +154,9 @@ public class QuotationFragment extends Fragment {
                         });
                     }
                 } else {
-                    Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, "There is no connection", BaseTransientBottomBar.LENGTH_SHORT);
+
                 }
             }
         });
@@ -164,7 +194,14 @@ public class QuotationFragment extends Fragment {
         //MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu, menu);
         thisMenu = menu;
-        thisMenu.findItem(R.id.add_quote_obtained).setVisible(addVisible);
+        //thisMenu.findItem(R.id.floatingFavourite).setVisible(addVisible);
+
+        if (addVisible) {
+            view.findViewById(R.id.floatingFavourite).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.floatingFavourite).setVisibility(View.INVISIBLE);
+        }
+
     }
 
     @Override
@@ -216,31 +253,13 @@ public class QuotationFragment extends Fragment {
                      });
                  }
              } else {
-                 Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
+                 //Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
+                 Snackbar.make(coordinatorLayout, "There is no connection", BaseTransientBottomBar.LENGTH_SHORT);
              }
 
              return true;
          } else {
-             // Añadir a favoritos
-             if (item.getItemId() == R.id.add_quote_obtained) {
-
-                 addVisible = false;
-
-                 new Thread(new Runnable() {
-                     @Override
-                     public void run() {
-                         quotationDAO.addQuotation(new Quotation(tvDentroSv.getText().toString(), sampleText.getText().toString()));
-                     }
-                 }).start();
-
-                 // Se vuelve a llamar al método onCreateOptionsMenu()
-                 getActivity().invalidateOptionsMenu();
-
-                 return true;
-
-             } else {
-                 return super.onOptionsItemSelected(item);
-             }
+             return super.onOptionsItemSelected(item);
          }
 
     }
@@ -252,7 +271,7 @@ public class QuotationFragment extends Fragment {
         outState.putString("quotation", tvDentroSv.getText().toString());
         outState.putString("author", sampleText.getText().toString());
         //outState.putInt("currentNumberLabel", quotesReceived);
-        outState.putBoolean("addVisible", (thisMenu.findItem(R.id.add_quote_obtained).isVisible()));
+        outState.putBoolean("addVisible", (view.findViewById(R.id.floatingFavourite).getVisibility() == View.VISIBLE));
     }
 
     public void showAddQuoteToFavouriteOption(Quotation quote) {
@@ -290,7 +309,8 @@ public class QuotationFragment extends Fragment {
     }
 
     public void hideAllActionBarOptionAndShowProgressBar() {
-        thisMenu.findItem(R.id.add_quote_obtained).setVisible(false);
+        view.findViewById(R.id.floatingFavourite).setVisibility(View.INVISIBLE);
+        //thisMenu.findItem(R.id.floatingFavourite).setVisible(false);
         thisMenu.findItem(R.id.obtain_new_quote).setVisible(false);
         swipeRefreshLayout.setRefreshing(true);
     }
@@ -298,7 +318,8 @@ public class QuotationFragment extends Fragment {
     public void updateQuoteTextAndQuoteAuthor(Quotation quotation) {
 
         if (quotation == null) {
-            Toast.makeText(requireContext(), "No fue posible obtener una cita", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(requireContext(), "No fue posible obtener una cita", Toast.LENGTH_SHORT).show();
+            Snackbar.make(coordinatorLayout, "No fue posible obtener una cita", BaseTransientBottomBar.LENGTH_SHORT);
         } else {
             tvDentroSv.setText(quotation.getQuoteText());
             sampleText.setText(quotation.getQuoteAuthor());

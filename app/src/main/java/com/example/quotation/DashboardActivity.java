@@ -80,7 +80,13 @@ public class DashboardActivity extends AppCompatActivity {
                     .replace(R.id.fcvMain, fragment, null)
                     .commit();
         } else {
-
+            getSupportActionBar().setTitle(savedInstanceState.getString("title"));
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("title", getSupportActionBar().getTitle().toString());
+        super.onSaveInstanceState(outState);
     }
 }
