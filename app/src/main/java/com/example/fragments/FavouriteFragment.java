@@ -1,5 +1,8 @@
 package com.example.fragments;
 
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE;
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -88,7 +91,53 @@ public class FavouriteFragment extends Fragment {
         RecyclerView.LayoutManager manager = new GridLayoutManager(requireContext(), 1);
         recycler.setLayoutManager(manager);
 
-        //ItemTouchHelper itemTouchHelper = ;
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ACTION_STATE_SWIPE, ItemTouchHelper.RIGHT);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quotationDAO.deleteQuotation(adapter.getQuotation(viewHolder.getLayoutPosition()));
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.deleteItem(viewHolder.getLayoutPosition());
+
+                                if (adapter.getItemCount() == 0) {
+                                    removeAllVisible = false;
+                                } else {
+                                    removeAllVisible = true;
+                                }
+                            }
+                        });
+                    }
+                }).start();
+
+                getActivity().invalidateOptionsMenu();
+            }
+
+            @Override
+            public boolean isItemViewSwipeEnabled() {
+                return true;
+            }
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return false;
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(recycler);
 
         adapter = new CustomRecyclerAdapter(new ArrayList<Quotation>(), new CustomRecyclerAdapter.OnItemClickListener() {
             @Override
@@ -117,46 +166,6 @@ public class FavouriteFragment extends Fragment {
                         startActivity(intent);
                     }
                 }
-            }
-        }, new CustomRecyclerAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                builder.setMessage(getString(R.string.deleteItem));
-
-                builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                quotationDAO.deleteQuotation(adapter.getQuotation(position));
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        adapter.deleteItem(position);
-
-                                        if (adapter.getItemCount() == 0) {
-                                            removeAllVisible = false;
-                                        } else {
-                                            removeAllVisible = true;
-                                        }
-                                    }
-                                });
-                            }
-                        }).start();
-
-                        // Se vuelve a llamar al método onCreateOptionsMenu()
-                        getActivity().invalidateOptionsMenu();
-                    }
-                });
-
-                builder.setNegativeButton(getString(R.string.no), null);
-
-                builder.create().show();
             }
         });
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,13 +45,13 @@ public class QuotationFragment extends Fragment {
     boolean addVisible;
     TextView tvDentroSv;
     TextView sampleText;
-    ProgressBar progressBar;
 
     private QuotationDAO quotationDAO;
     QuotationThread thread;
 
     Retrofit retrofit;
     RetrofitInterface retrofitInterface;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public QuotationFragment() {
 
@@ -70,8 +71,6 @@ public class QuotationFragment extends Fragment {
         tvDentroSv = view.findViewById(R.id.tvDentroSv);
         sampleText = view.findViewById(R.id.sampleText);
 
-        progressBar = view.findViewById(R.id.progressBar);
-
         quotationDAO = DataBase.getInstance(requireContext()).obtainInterface();
 
         // Se crea una instancia de Retrofit
@@ -82,6 +81,55 @@ public class QuotationFragment extends Fragment {
 
         // Se crea la implementación de la interfaz previamente definida
         retrofitInterface = retrofit.create(RetrofitInterface.class);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+                String request = prefs.getString("requests", "");
+
+                hideAllActionBarOptionAndShowProgressBar();
+
+                String req = prefs.getString("languages", "");
+
+                if (isConnected()) {
+                    if (request.equals("get")) {
+
+                        Call<Quotation> call = retrofitInterface.getQuotation(req);
+
+                        call.enqueue(new Callback<Quotation>() {
+                            @Override
+                            public void onResponse(Call<Quotation> call, Response<Quotation> response) {
+                                updateQuoteTextAndQuoteAuthor(response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<Quotation> call, Throwable t) {
+                                updateQuoteTextAndQuoteAuthor(null);
+                            }
+                        });
+
+                    } else {
+                        Call<Quotation> call = retrofitInterface.postQuotation("getQuote", "json", req);
+
+                        call.enqueue(new Callback<Quotation>() {
+                            @Override
+                            public void onResponse(Call<Quotation> call, Response<Quotation> response) {
+                                updateQuoteTextAndQuoteAuthor(response.body());
+                            }
+
+                            @Override
+                            public void onFailure(Call<Quotation> call, Throwable t) {
+                                updateQuoteTextAndQuoteAuthor(null);
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "There is no connection", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         if (savedInstanceState != null) {
             int currentNumberLabel = savedInstanceState.getInt("currentNumberLabel");
@@ -130,6 +178,8 @@ public class QuotationFragment extends Fragment {
              String request = prefs.getString("requests", "");
 
              hideAllActionBarOptionAndShowProgressBar();
+
+             swipeRefreshLayout.setRefreshing(true);
 
              String req = prefs.getString("languages", "");
 
@@ -242,7 +292,7 @@ public class QuotationFragment extends Fragment {
     public void hideAllActionBarOptionAndShowProgressBar() {
         thisMenu.findItem(R.id.add_quote_obtained).setVisible(false);
         thisMenu.findItem(R.id.obtain_new_quote).setVisible(false);
-        progressBar.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     public void updateQuoteTextAndQuoteAuthor(Quotation quotation) {
@@ -253,7 +303,7 @@ public class QuotationFragment extends Fragment {
             tvDentroSv.setText(quotation.getQuoteText());
             sampleText.setText(quotation.getQuoteAuthor());
 
-            progressBar.setVisibility(View.INVISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
 
             // Llamamos al hilo
             new QuotationThread(this).start();

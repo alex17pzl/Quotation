@@ -17,10 +17,9 @@ public class CustomRecyclerAdapter extends RecyclerView.Adapter<CustomRecyclerAd
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
-    public CustomRecyclerAdapter(List<Quotation> quotations, OnItemClickListener onItemClickListener, OnItemLongClickListener onItemLongClickListener) {
+    public CustomRecyclerAdapter(List<Quotation> quotations, OnItemClickListener onItemClickListener) {
         this.quotations = quotations;
         this.onItemClickListener = onItemClickListener;
-        this.onItemLongClickListener = onItemLongClickListener;
     }
 
     @NonNull
