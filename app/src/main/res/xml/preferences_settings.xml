@@ -16,6 +16,7 @@
             android:entries="@array/default_languages_titles"
             android:entryValues="@array/default_languages_values"
             android:key="languages"
+            android:defaultValue="en"
             />
 
         <ListPreference
@@ -23,6 +24,7 @@
             android:entries="@array/default_requests_titles"
             android:entryValues="@array/default_requests_values"
             android:key="requests"
+            android:defaultValue="GET"
             />
 
     </PreferenceCategory>
