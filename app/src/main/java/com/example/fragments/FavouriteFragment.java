@@ -250,6 +250,7 @@ public class FavouriteFragment extends Fragment {
     public void showDeleteAllQuotationsOption(List<Quotation> quotes) {
         // Si hay alguna cita favorita muestra la opcíon de borrar todas las citas
         if (quotes.size() != 0) {
+            adapter.deleteAllQuotations();
             adapter.addFavouriteQuotationsToStoredList(quotes);
             removeAllVisible = true;
         } else {
