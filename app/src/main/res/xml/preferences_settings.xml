@@ -24,7 +24,7 @@
             android:entries="@array/default_requests_titles"
             android:entryValues="@array/default_requests_values"
             android:key="requests"
-            android:defaultValue="GET"
+            android:defaultValue="get"
             />
 
     </PreferenceCategory>
